@@ -11,7 +11,14 @@
     <button id="btnStart">Start pomp</button>
     <div id="ledStatus" class="led off"></div>
       <div class="menu-bar">
-        <button class="menu-btn">📊 Status</button>
+        <div class="menu-dropdown">
+  <button class="menu-btn">📁 Project ▾</button>
+  <div class="dropdown-content">
+    <button onclick="alert('Nieuw project')">🆕 Nieuw project</button>
+    <button onclick="alert('Project openen')">📂 Openen</button>
+    <button onclick="alert('Project opslaan')">💾 Opslaan</button>
+  </div>
+</div>
         <button class="menu-btn">⚙️ Instellingen</button>
         <button class="menu-btn">🧪 Test</button>
       </div>
