@@ -38,3 +38,31 @@ button {
   overflow: hidden;
 }
 
+.menu-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #eee;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
+  border-radius: 0 0 40px 40px;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #333;
+}
+
+.menu-btn:hover {
+  background-color: #ddd;
+  border-radius: 8px;
+}
+
+
