@@ -1,0 +1,22 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  margin-top: 50px;
+}
+button {
+  font-size: 1.5em;
+  padding: 10px 20px;
+}
+.led {
+  width: 30px;
+  height: 30px;
+  margin: 20px auto;
+  border-radius: 50%;
+  background-color: gray;
+}
+.led.on {
+  background-color: green;
+}
+.led.off {
+  background-color: red;
+}
