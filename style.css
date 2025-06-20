@@ -1,6 +1,6 @@
 body {
   font-family: sans-serif;
-  background-color: #222;
+  background-color: #fff;  /* helder wit */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,7 +33,7 @@ button {
   border-radius: 40px;
   padding: 20px;
   background-color: #f0f0f0;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
 }
