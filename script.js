@@ -114,3 +114,48 @@ function saveSettings() {
   saveCurrentProject(); // bestaande functie die het project opslaat
   closeSettings();
 }
+
+function renderObjects() {
+  const screen = document.getElementById('screen');
+  screen.innerHTML = ""; // eerst leegmaken
+
+  currentProject.objects.forEach(obj => {
+    let el = document.createElement("div");
+    el.style.position = "absolute";
+    el.style.left = obj.x + "px";
+    el.style.top = obj.y + "px";
+    el.style.width = obj.width + "px";
+    el.style.height = obj.height + "px";
+    el.style.borderRadius = "10px";
+
+    if (obj.type === "button") {
+      el.innerText = obj.label;
+      el.className = "hmi-button";
+      el.style.background = "#48c";
+      el.style.color = "white";
+      el.style.display = "flex";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.style.cursor = "pointer";
+
+      el.onclick = () => {
+        const topic = currentProject.settings.mqttPrefix + "/" + obj.name;
+        const payload = "clicked"; // dit kan later aangepast worden
+        publishMQTT(topic, payload);
+      };
+
+    } else if (obj.type === "led") {
+      el.className = "hmi-led";
+      el.style.background = obj.state ? "lime" : "gray";
+      el.style.border = "2px solid #333";
+    }
+
+    screen.appendChild(el);
+  });
+}
+
+function publishMQTT(topic, message) {
+  console.log("MQTT PUBLISH:", topic, message);
+  // TODO: MQTT client implementeren of naar Bluetooth sturen
+}
+
