@@ -220,3 +220,54 @@ function publishMQTT(topic, message) {
   }
 }
 
+function openObjectManager() {
+  const tbody = document.querySelector("#objectTable tbody");
+  tbody.innerHTML = "";
+
+  if (!currentProject || !currentProject.objects) return;
+
+  currentProject.objects.forEach((obj, index) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td><input value="${obj.name || ""}" onchange="updateObjectField(${index}, 'name', this.value)" /></td>
+      <td>
+        <select onchange="updateObjectField(${index}, 'type', this.value)">
+          <option value="button" ${obj.type === "button" ? "selected" : ""}>Knop</option>
+          <option value="led" ${obj.type === "led" ? "selected" : ""}>LED</option>
+        </select>
+      </td>
+      <td><input value="${obj.label || ""}" onchange="updateObjectField(${index}, 'label', this.value)" /></td>
+      <td><input type="number" value="${obj.x || 0}" onchange="updateObjectField(${index}, 'x', parseInt(this.value))" /></td>
+      <td><input type="number" value="${obj.y || 0}" onchange="updateObjectField(${index}, 'y', parseInt(this.value))" /></td>
+      <td><input type="number" value="${obj.width || 100}" onchange="updateObjectField(${index}, 'width', parseInt(this.value))" /></td>
+      <td><input type="number" value="${obj.height || 50}" onchange="updateObjectField(${index}, 'height', parseInt(this.value))" /></td>
+      <td><button onclick="deleteObjectRow(${index})">🗑️</button></td>
+    `;
+
+    tbody.appendChild(row);
+  });
+
+  document.getElementById("objectManager").style.display = "block";
+}
+
+function closeObjectManager() {
+  document.getElementById("objectManager").style.display = "none";
+  renderObjects();
+  saveCurrentProject?.();
+}
+
+function deleteObjectRow(index) {
+  if (confirm("Weet je zeker dat je dit object wilt verwijderen?")) {
+    currentProject.objects.splice(index, 1);
+    openObjectManager();
+  }
+}
+
+function updateObjectField(index, field, value) {
+  currentProject.objects[index][field] = value;
+  renderObjects(); // real-time bijwerken op canvas
+  saveCurrentProject?.();
+}
+
+

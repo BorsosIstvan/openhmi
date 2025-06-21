@@ -31,6 +31,35 @@
   </div>
 </div>
 <!-- End Instellingen Modaal-->
+<!-- Objectbeheer Tabel -->
+<div id="objectManager" style="display: none; position: fixed; top: 5%; left: 50%; transform: translateX(-50%);
+  width: 90%; max-width: 1000px; background: white; border-radius: 12px; box-shadow: 0 0 20px #0005; padding: 20px; z-index: 9999; font-family: sans-serif;">
+  <h2 style="margin-top: 0;">Objectbeheer</h2>
+
+  <table style="width: 100%; border-collapse: collapse;" id="objectTable">
+    <thead>
+      <tr style="background: #f0f0f0;">
+        <th>Naam</th>
+        <th>Type</th>
+        <th>Label</th>
+        <th>X</th>
+        <th>Y</th>
+        <th>Breedte</th>
+        <th>Hoogte</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Dynamische rijen -->
+    </tbody>
+  </table>
+
+  <div style="text-align: right; margin-top: 10px;">
+    <button onclick="closeObjectManager()" style="margin-right: 10px;">Sluiten</button>
+    <button onclick="addObjectRow()">+ Rij toevoegen</button>
+  </div>
+</div>
+
 <!--Menu-->
 <div class="menu-bar">
     <!--div class="menu-dropdown"-->
@@ -42,7 +71,7 @@
             <!--/div-->
     <!--/div-->
         <button class="menu-btn" onclick="openSettings()">⚙️</button>
-        <button class="menu-btn">🧪</button>
+        <button class="menu-btn" onclick="openObjectManager()">🧩</button>
     </div>
 </div>
 <!--End Menu-->
