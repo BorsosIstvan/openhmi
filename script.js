@@ -77,3 +77,40 @@ function loadProject() {
 
 window.onload = getProjectList;
 
+function openSettings() {
+  // Als project geladen is, vul de velden
+  if (typeof currentProject !== 'undefined' && currentProject.settings) {
+    document.getElementById('mqttBroker').value = currentProject.settings.mqttBroker || '';
+    document.getElementById('mqttPort').value = currentProject.settings.mqttPort || 1883;
+    document.getElementById('mqttPrefix').value = currentProject.settings.mqttPrefix || '';
+    document.getElementById('resolution').value = currentProject.settings.resolution || '320x240';
+    document.getElementById('bgColor').value = currentProject.settings.bgColor || '#ffffff';
+  }
+  document.getElementById('settingsModal').style.display = 'block';
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').style.display = 'none';
+}
+
+function saveSettings() {
+  const settings = {
+    mqttBroker: document.getElementById('mqttBroker').value,
+    mqttPort: parseInt(document.getElementById('mqttPort').value),
+    mqttPrefix: document.getElementById('mqttPrefix').value,
+    resolution: document.getElementById('resolution').value,
+    bgColor: document.getElementById('bgColor').value
+  };
+
+  if (typeof currentProject === 'undefined') {
+    currentProject = { name: "NieuwProject", settings: {}, objects: [] };
+  }
+
+  currentProject.settings = settings;
+
+  // Verander achtergrondkleur live
+  document.getElementById('screen').style.backgroundColor = settings.bgColor;
+
+  saveCurrentProject(); // bestaande functie die het project opslaat
+  closeSettings();
+}

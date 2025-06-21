@@ -7,22 +7,47 @@
 </head>
 <body>
   <div class="phone">
+<!-- Werkplek-->
     <h2>🚀 OpenHMI Paneel</h2>
     <button id="btnStart">Start pomp</button>
     <div id="ledStatus" class="led off"></div>
-      <div class="menu-bar">
-        <div class="menu-dropdown">
-  <button class="menu-btn">📁 Project ▾</button>
-  <div class="dropdown-content">
-    <button onclick="saveProject()">💾 Opslaan</button>
-    <button onclick="loadProject()">📂 Laden</button>
-    <select id="projectList"></select>
+<!-- End Werkplek-->
+<!-- Instellingen Modaal -->
+<div id="settingsModal" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
+    width: 400px; background: white; border-radius: 16px; box-shadow: 0 0 20px #0005; padding: 20px; z-index: 9999; font-family: sans-serif;">
+  <h2 style="margin-top: 0;">Projectinstellingen</h2>
+
+  <label>MQTT Broker:<br><input id="mqttBroker" type="text" style="width: 100%;" /></label><br><br>
+
+  <label>Poort:<br><input id="mqttPort" type="number" value="1883" style="width: 100%;" /></label><br><br>
+
+  <label>Topic Prefix:<br><input id="mqttPrefix" type="text" style="width: 100%;" /></label><br><br>
+
+  <label>Resolutie:<br><input id="resolution" type="text" value="320x240" style="width: 100%;" /></label><br><br>
+
+  <label>Achtergrondkleur:<br><input id="bgColor" type="color" value="#ffffff" style="width: 100%;" /></label><br><br>
+
+  <div style="text-align: right;">
+    <button onclick="closeSettings()" style="margin-right: 10px;">Sluiten</button>
+    <button onclick="saveSettings()">Opslaan</button>
   </div>
 </div>
+<!-- End Instellingen Modaal-->
+<!--Menu-->
+<div class="menu-bar">
+    <div class="menu-dropdown">
+        <button class="menu-btn">📁 Project ▾</button>
+            <div class="dropdown-content">
+                <button onclick="saveProject()">💾 Opslaan</button>
+                <button onclick="loadProject()">📂 Laden</button>
+                <select id="projectList"></select>
+            </div>
+    </div>
         <button class="menu-btn">⚙️ Instellingen</button>
         <button class="menu-btn">🧪 Test</button>
-      </div>
-  </div>
+    </div>
+</div>
+<!--End Menu-->
 
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <script src="script.js"></script>
