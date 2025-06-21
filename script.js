@@ -12,27 +12,26 @@ function connectMQTT(brokerURL) {
     console.log("✅ Verbonden met MQTT broker:", brokerURL);
 
     if (currentProject?.objects) {
-      currentProject.objects.forEach(obj => {
-        if (obj.type === 'led') {
-          const topic = (currentProject.settings.mqttPrefix || '') + "/" + obj.name;
-          client.subscribe(topic);
-        }
-      });
+  currentProject.objects.forEach(obj => {
+    if (obj.subscribeTopic) {
+      client.subscribe(obj.subscribeTopic);
     }
+  });
+}
   });
 
   client.on('message', (topic, message) => {
-    const msg = message.toString();
-    const screen = document.getElementById("screen");
-    const leds = screen.getElementsByClassName("hmi-led");
+  const msg = message.toString();
+  const screen = document.getElementById("screen");
 
-    Array.from(leds).forEach(el => {
-      const ledTopic = (currentProject.settings.mqttPrefix || '') + "/" + el.dataset.name;
-      if (topic === ledTopic) {
-        el.style.background = (msg === 'aan' || msg === 'on' || msg === '1') ? 'lime' : 'gray';
-      }
-    });
+  Array.from(screen.getElementsByClassName("hmi-led")).forEach(el => {
+    const obj = currentProject.objects.find(o => o.name === el.dataset.name);
+    if (obj && obj.subscribeTopic === topic) {
+      const isOn = msg === obj.stateOn || msg === "1" || msg.toLowerCase() === "on";
+      el.style.background = isOn ? 'lime' : 'gray';
+    }
   });
+});
 }
 
 function getProjectList() {
@@ -159,9 +158,10 @@ function renderObjects() {
       el.dataset.name = obj.name;
 
       el.onclick = () => {
-        const topic = (currentProject.settings.mqttPrefix || '') + "/" + obj.name;
-        publishMQTT(topic, obj.payload || "clicked");
-      };
+  const topic = obj.publishTopic || ((currentProject.settings.mqttPrefix || '') + "/" + obj.name);
+  const payload = obj.publishPayload || "clicked";
+  publishMQTT(topic, payload);
+};
 
     } else if (obj.type === "led") {
       el.className = "hmi-led";

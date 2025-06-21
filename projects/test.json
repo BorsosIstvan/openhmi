@@ -9,25 +9,28 @@
     "resolution": "320x240"
   },
   "objects": [
-    {
-      "type": "button",
-      "name": "cmd",
-      "label": "Start pomp",
-      "x": 20,
-      "y": 30,
-      "width": 120,
-      "height": 40,
-      "payload": "start"
-    },
-    {
-      "type": "led",
-      "name": "status",
-      "x": 160,
-      "y": 35,
-      "width": 30,
-      "height": 30,
-      "state": false
-    }
-  ]
+  {
+    "type": "button",
+    "name": "cmd",
+    "label": "Start pomp",
+    "x": 20,
+    "y": 30,
+    "width": 120,
+    "height": 40,
+    "publishTopic": "huis/pomp/cmd",
+    "publishPayload": "aan"
+  },
+  {
+    "type": "led",
+    "name": "status",
+    "x": 160,
+    "y": 35,
+    "width": 30,
+    "height": 30,
+    "subscribeTopic": "huis/pomp/status",
+    "stateOn": "aan",
+    "stateOff": "uit"
+  }
+]
 }
 
