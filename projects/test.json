@@ -2,7 +2,7 @@
   "projectName": "Pomptest",
   "created": "2025-06-20T12:00:00Z",
   "settings": {
-    "mqttBroker": "poci.n-soft.net",
+    "mqttBroker": "ws://poci.n-soft.net:9001",
     "mqttPort": 9001,
     "mqttPrefix": "pomp",
     "bgColor": "#eef2f7",
