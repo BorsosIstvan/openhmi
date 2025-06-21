@@ -1,4 +1,4 @@
-const client = mqtt.connect('ws://raspberrypi.local:9001'); // ← pas aan als nodig
+const client = mqtt.connect('ws://poci.n-soft.net:9001'); // ← pas aan als nodig
 
 client.on('connect', () => {
   console.log("✅ Verbonden met MQTT broker");
@@ -20,3 +20,27 @@ client.on('message', (topic, message) => {
     led.className = 'led ' + (msg === 'aan' ? 'on' : 'off');
   }
 });
+
+function saveProject() {
+  const project = {
+    projectName: "testproject",
+    created: new Date().toISOString(),
+    objects: [],
+    variables: {},
+    mqtt: {
+      broker: "mqtt://localhost",
+      port: 1883
+    }
+  };
+
+  fetch('/openhmi/php/save_project.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(project)
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("Server:", data);
+    alert(data.message);
+  });
+}
