@@ -78,6 +78,44 @@ function saveProject() {
   });
 }
 
+function saveProjectAs() {
+  const name = prompt("Voer een nieuwe projectnaam in:");
+  if (!name) return;
+
+  // Nieuw projectobject maken met de huidige inhoud
+  const project = {
+    projectName: name,
+    created: new Date().toISOString(),
+    saved: new Date().toISOString(),
+    settings: currentProject?.settings || {},
+    objects: currentProject?.objects || [],
+    variables: currentProject?.variables || {},
+    mqtt: currentProject?.mqtt || {
+      broker: "mqtt://localhost",
+      port: 1883
+    }
+  };
+
+  fetch('/openhmi/api/save_project.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(project)
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message || "Project succesvol opgeslagen.");
+    getProjectList();
+
+    // Werk currentProject bij naar het nieuwe
+    currentProject = project;
+  })
+  .catch(err => {
+    console.error("❌ Fout bij opslaan:", err);
+    alert("Opslaan mislukt.");
+  });
+}
+
+
 function loadProject() {
   const name = document.getElementById('projectList').value;
   if (!name) return;
