@@ -1,28 +1,33 @@
 {
-  "name": "DemoProject",
+  "projectName": "Pomptest",
+  "created": "2025-06-20T12:00:00Z",
   "settings": {
-    "mqttBroker": "ws://poci.n-soft.net",
+    "mqttBroker": "poci.n-soft.net",
     "mqttPort": 9001,
-    "mqttPrefix": "openhmi/DemoProject"
+    "mqttPrefix": "pomp",
+    "bgColor": "#eef2f7",
+    "resolution": "320x240"
   },
   "objects": [
     {
       "type": "button",
-      "name": "Knop1",
-      "x": 50,
-      "y": 50,
-      "width": 100,
+      "name": "cmd",
+      "label": "Start pomp",
+      "x": 20,
+      "y": 30,
+      "width": 120,
       "height": 40,
-      "label": "Start"
+      "payload": "start"
     },
     {
       "type": "led",
-      "name": "Led1",
-      "x": 200,
-      "y": 50,
-      "width": 40,
-      "height": 40,
+      "name": "status",
+      "x": 160,
+      "y": 35,
+      "width": 30,
+      "height": 30,
       "state": false
     }
   ]
 }
+

@@ -1,25 +1,39 @@
-const client = mqtt.connect('ws://poci.n-soft.net:9001'); // ← pas aan als nodig
+let client = null;
+let currentProject = null;
 
-client.on('connect', () => {
-  console.log("✅ Verbonden met MQTT broker");
-
-  // Abonneren op status
-  client.subscribe('pomp/status');
-});
-
-// Knop stuurt start-commando
-document.getElementById("btnStart").addEventListener("click", () => {
-  client.publish('pomp/cmd', 'start');
-});
-
-// Status ontvangen
-client.on('message', (topic, message) => {
-  if (topic === 'pomp/status') {
-    const led = document.getElementById("ledStatus");
-    const msg = message.toString();
-    led.className = 'led ' + (msg === 'aan' ? 'on' : 'off');
+function connectMQTT(brokerURL) {
+  if (client) {
+    client.end(); // eventuele vorige client afsluiten
   }
-});
+
+  client = mqtt.connect(brokerURL);
+
+  client.on('connect', () => {
+    console.log("✅ Verbonden met MQTT broker:", brokerURL);
+
+    if (currentProject?.objects) {
+      currentProject.objects.forEach(obj => {
+        if (obj.type === 'led') {
+          const topic = (currentProject.settings.mqttPrefix || '') + "/" + obj.name;
+          client.subscribe(topic);
+        }
+      });
+    }
+  });
+
+  client.on('message', (topic, message) => {
+    const msg = message.toString();
+    const screen = document.getElementById("screen");
+    const leds = screen.getElementsByClassName("hmi-led");
+
+    Array.from(leds).forEach(el => {
+      const ledTopic = (currentProject.settings.mqttPrefix || '') + "/" + el.dataset.name;
+      if (topic === ledTopic) {
+        el.style.background = (msg === 'aan' || msg === 'on' || msg === '1') ? 'lime' : 'gray';
+      }
+    });
+  });
+}
 
 function getProjectList() {
   fetch('/openhmi/api/list_projects.php')
@@ -45,9 +59,12 @@ function saveProject() {
     created: new Date().toISOString(),
     objects: [],
     variables: {},
-    mqtt: {
-      broker: "mqtt://localhost",
-      port: 1883
+    settings: {
+      mqttBroker: "ws://poci.n-soft.net:9001",
+      mqttPort: 9001,
+      mqttPrefix: "",
+      resolution: "320x240",
+      bgColor: "#ffffff"
     }
   };
 
@@ -56,11 +73,11 @@ function saveProject() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(project)
   })
-  .then(res => res.json())
-  .then(data => {
-    alert(data.message);
-    getProjectList();
-  });
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message);
+      getProjectList();
+    });
 }
 
 function loadProject() {
@@ -70,16 +87,19 @@ function loadProject() {
   fetch(`/openhmi/api/load_project.php?project=${name}`)
     .then(res => res.json())
     .then(data => {
-      alert("Project geladen: " + JSON.stringify(data, null, 2));
-      // Hier kun je jouw scherm/data vullen met de geladen info
+      currentProject = data;
+      console.log("📂 Project geladen:", currentProject);
+      document.getElementById('screen').style.backgroundColor = currentProject.settings.bgColor || '#ffffff';
+      renderObjects();
+      const brokerURL = currentProject.settings.mqttBroker || 'ws://localhost:9001';
+      connectMQTT(brokerURL);
     });
 }
 
 window.onload = getProjectList;
 
 function openSettings() {
-  // Als project geladen is, vul de velden
-  if (typeof currentProject !== 'undefined' && currentProject.settings) {
+  if (currentProject?.settings) {
     document.getElementById('mqttBroker').value = currentProject.settings.mqttBroker || '';
     document.getElementById('mqttPort').value = currentProject.settings.mqttPort || 1883;
     document.getElementById('mqttPrefix').value = currentProject.settings.mqttPrefix || '';
@@ -102,22 +122,21 @@ function saveSettings() {
     bgColor: document.getElementById('bgColor').value
   };
 
-  if (typeof currentProject === 'undefined') {
+  if (!currentProject) {
     currentProject = { name: "NieuwProject", settings: {}, objects: [] };
   }
 
   currentProject.settings = settings;
 
-  // Verander achtergrondkleur live
   document.getElementById('screen').style.backgroundColor = settings.bgColor;
 
-  saveCurrentProject(); // bestaande functie die het project opslaat
+  saveCurrentProject(); // deze functie moet elders in jouw systeem bestaan
   closeSettings();
 }
 
 function renderObjects() {
   const screen = document.getElementById('screen');
-  screen.innerHTML = ""; // eerst leegmaken
+  screen.innerHTML = "";
 
   currentProject.objects.forEach(obj => {
     let el = document.createElement("div");
@@ -137,17 +156,18 @@ function renderObjects() {
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
       el.style.cursor = "pointer";
+      el.dataset.name = obj.name;
 
       el.onclick = () => {
-        const topic = currentProject.settings.mqttPrefix + "/" + obj.name;
-        const payload = "clicked"; // dit kan later aangepast worden
-        publishMQTT(topic, payload);
+        const topic = (currentProject.settings.mqttPrefix || '') + "/" + obj.name;
+        publishMQTT(topic, obj.payload || "clicked");
       };
 
     } else if (obj.type === "led") {
       el.className = "hmi-led";
       el.style.background = obj.state ? "lime" : "gray";
       el.style.border = "2px solid #333";
+      el.dataset.name = obj.name;
     }
 
     screen.appendChild(el);
@@ -155,7 +175,11 @@ function renderObjects() {
 }
 
 function publishMQTT(topic, message) {
-  console.log("MQTT PUBLISH:", topic, message);
-  // TODO: MQTT client implementeren of naar Bluetooth sturen
+  if (client?.connected) {
+    console.log("MQTT →", topic, message);
+    client.publish(topic, message);
+  } else {
+    console.warn("MQTT client niet verbonden.");
+  }
 }
 
