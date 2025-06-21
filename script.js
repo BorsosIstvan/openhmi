@@ -22,7 +22,7 @@ client.on('message', (topic, message) => {
 });
 
 function getProjectList() {
-  fetch('/openhmi/php/list_projects.php')
+  fetch('/openhmi/api/list_projects.php')
     .then(res => res.json())
     .then(projects => {
       const select = document.getElementById('projectList');
@@ -51,7 +51,7 @@ function saveProject() {
     }
   };
 
-  fetch('/openhmi/php/save_project.php', {
+  fetch('/openhmi/api/save_project.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(project)
@@ -67,7 +67,7 @@ function loadProject() {
   const name = document.getElementById('projectList').value;
   if (!name) return;
 
-  fetch(`/openhmi/php/load_project.php?project=${name}`)
+  fetch(`/openhmi/api/load_project.php?project=${name}`)
     .then(res => res.json())
     .then(data => {
       alert("Project geladen: " + JSON.stringify(data, null, 2));
