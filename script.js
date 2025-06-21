@@ -50,33 +50,32 @@ function getProjectList() {
 }
 
 function saveProject() {
-  const name = prompt("Voer projectnaam in:");
+  if (!currentProject) {
+    alert("Geen project geladen.");
+    return;
+  }
+
+  const name = currentProject.projectName || prompt("Voer projectnaam in:");
   if (!name) return;
 
-  const project = {
-    projectName: name,
-    created: new Date().toISOString(),
-    objects: [],
-    variables: {},
-    settings: {
-      mqttBroker: "ws://poci.n-soft.net:9001",
-      mqttPort: 9001,
-      mqttPrefix: "",
-      resolution: "320x240",
-      bgColor: "#ffffff"
-    }
-  };
+  // Bijwerken van timestamp, of andere dynamische velden
+  currentProject.projectName = name;
+  currentProject.saved = new Date().toISOString();
 
   fetch('/openhmi/api/save_project.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(project)
+    body: JSON.stringify(currentProject)
   })
-    .then(res => res.json())
-    .then(data => {
-      alert(data.message);
-      getProjectList();
-    });
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message || "Project opgeslagen.");
+    getProjectList();
+  })
+  .catch(err => {
+    console.error("❌ Fout bij opslaan:", err);
+    alert("Project opslaan mislukt.");
+  });
 }
 
 function loadProject() {
