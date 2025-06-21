@@ -21,6 +21,17 @@
     "publishPayload": "aan"
   },
   {
+    "type": "button",
+    "name": "cmd",
+    "label": "Stop pomp",
+    "x": 20,
+    "y": 130,
+    "width": 120,
+    "height": 40,
+    "publishTopic": "huis/pomp/cmd",
+    "publishPayload": "uit"
+  },
+  {
     "type": "led",
     "name": "status",
     "x": 160,
