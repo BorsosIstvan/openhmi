@@ -27,7 +27,7 @@
     "y": 35,
     "width": 30,
     "height": 30,
-    "subscribeTopic": "huis/pomp/status",
+    "subscribeTopic": "huis/pomp/cmd",
     "stateOn": "aan",
     "stateOff": "uit"
   }
