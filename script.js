@@ -224,7 +224,7 @@ function openObjectManager() {
   const tbody = document.querySelector("#objectTable tbody");
   tbody.innerHTML = "";
 
-  if (!currentProject || !currentProject.objects) return;
+  if (!currentProject?.objects) return;
 
   currentProject.objects.forEach((obj, index) => {
     const row = document.createElement("tr");
@@ -232,7 +232,7 @@ function openObjectManager() {
     row.innerHTML = `
       <td><input value="${obj.name || ""}" onchange="updateObjectField(${index}, 'name', this.value)" /></td>
       <td>
-        <select onchange="updateObjectField(${index}, 'type', this.value)">
+        <select onchange="changeObjectType(${index}, this.value)">
           <option value="button" ${obj.type === "button" ? "selected" : ""}>Knop</option>
           <option value="led" ${obj.type === "led" ? "selected" : ""}>LED</option>
         </select>
@@ -246,10 +246,16 @@ function openObjectManager() {
     `;
 
     tbody.appendChild(row);
+
+    // Extra rij voor type-specifieke velden
+    const extraRow = document.createElement("tr");
+    extraRow.innerHTML = `<td colspan="8">${generateExtraFields(obj, index)}</td>`;
+    tbody.appendChild(extraRow);
   });
 
   document.getElementById("objectManager").style.display = "block";
 }
+
 
 function closeObjectManager() {
   document.getElementById("objectManager").style.display = "none";
@@ -269,5 +275,79 @@ function updateObjectField(index, field, value) {
   renderObjects(); // real-time bijwerken op canvas
   saveCurrentProject?.();
 }
+
+function generateExtraFields(obj, index) {
+  if (obj.type === "button") {
+    return `
+      <label>Publish Topic:
+        <input value="${obj.publishTopic || ""}" onchange="updateObjectField(${index}, 'publishTopic', this.value)" />
+      </label>
+      &nbsp;&nbsp;
+      <label>Payload:
+        <input value="${obj.publishPayload || ""}" onchange="updateObjectField(${index}, 'publishPayload', this.value)" />
+      </label>
+    `;
+  } else if (obj.type === "led") {
+    return `
+      <label>Subscribe Topic:
+        <input value="${obj.subscribeTopic || ""}" onchange="updateObjectField(${index}, 'subscribeTopic', this.value)" />
+      </label>
+      &nbsp;&nbsp;
+      <label>State On:
+        <input value="${obj.stateOn || ""}" onchange="updateObjectField(${index}, 'stateOn', this.value)" />
+      </label>
+      &nbsp;&nbsp;
+      <label>State Off:
+        <input value="${obj.stateOff || ""}" onchange="updateObjectField(${index}, 'stateOff', this.value)" />
+      </label>
+    `;
+  }
+  return "";
+}
+
+function changeObjectType(index, newType) {
+  const base = {
+    name: currentProject.objects[index].name || "",
+    x: currentProject.objects[index].x || 50,
+    y: currentProject.objects[index].y || 50,
+    width: currentProject.objects[index].width || 100,
+    height: currentProject.objects[index].height || 50,
+    type: newType
+  };
+
+  if (newType === "button") {
+    currentProject.objects[index] = {
+      ...base,
+      label: "Knop",
+      publishTopic: "",
+      publishPayload: ""
+    };
+  } else if (newType === "led") {
+    currentProject.objects[index] = {
+      ...base,
+      subscribeTopic: "",
+      stateOn: "aan",
+      stateOff: "uit"
+    };
+  }
+
+  openObjectManager(); // herlaad tabel
+}
+
+function addObjectRow() {
+  currentProject.objects.push({
+    type: "button",
+    name: "nieuwObject",
+    label: "Knop",
+    x: 50,
+    y: 50,
+    width: 120,
+    height: 40,
+    publishTopic: "",
+    publishPayload: ""
+  });
+  openObjectManager();
+}
+
 
 
