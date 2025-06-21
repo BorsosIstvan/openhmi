@@ -1,19 +1,22 @@
 <?php
 header("Content-Type: application/json");
 
-if (!isset($_GET['project'])) {
-    http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Geen projectnaam opgegeven."]);
+$projectDir = "../projects";
+
+// Controleer of de map bestaat
+if (!is_dir($projectDir)) {
+    echo json_encode([]);
     exit;
 }
 
-$projectName = preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['project']);
-$filePath = "../projects/$projectName.json";
+// Scan de map op .json-bestanden
+$files = scandir($projectDir);
+$projects = [];
 
-if (!file_exists($filePath)) {
-    http_response_code(404);
-    echo json_encode(["status" => "error", "message" => "Project bestaat niet."]);
-    exit;
+foreach ($files as $file) {
+    if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
+        $projects[] = pathinfo($file, PATHINFO_FILENAME);
+    }
 }
 
-echo file_get_contents($filePath);
+echo json_encode($projects);
