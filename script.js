@@ -21,9 +21,27 @@ client.on('message', (topic, message) => {
   }
 });
 
+function getProjectList() {
+  fetch('/openhmi/api/list_projects.php')
+    .then(res => res.json())
+    .then(projects => {
+      const select = document.getElementById('projectList');
+      select.innerHTML = '';
+      projects.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    });
+}
+
 function saveProject() {
+  const name = prompt("Voer projectnaam in:");
+  if (!name) return;
+
   const project = {
-    projectName: "testproject",
+    projectName: name,
     created: new Date().toISOString(),
     objects: [],
     variables: {},
@@ -33,14 +51,29 @@ function saveProject() {
     }
   };
 
-  fetch('/openhmi/php/save_project.php', {
+  fetch('/openhmi/api/save_project.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(project)
   })
   .then(res => res.json())
   .then(data => {
-    console.log("Server:", data);
     alert(data.message);
+    getProjectList();
   });
 }
+
+function loadProject() {
+  const name = document.getElementById('projectList').value;
+  if (!name) return;
+
+  fetch(`/openhmi/api/load_project.php?project=${name}`)
+    .then(res => res.json())
+    .then(data => {
+      alert("Project geladen: " + JSON.stringify(data, null, 2));
+      // Hier kun je jouw scherm/data vullen met de geladen info
+    });
+}
+
+window.onload = getProjectList;
+
