@@ -233,6 +233,11 @@ function renderObjects() {
   el.style.top = obj.y + "px";
   el.style.width = obj.width + "px";
   el.style.height = obj.height + "px";
+  el.style.zIndex = 10;
+
+  // Optioneel kleur of rand
+  el.style.background = "#ddd";
+  el.style.border = "1px solid #aaa";
 
   if (mode === "run") {
     el.oninput = () => {
@@ -366,7 +371,7 @@ function closeObjectList() {
 
 function addObject() {
   //const type = document.getElementById("newObjType").value;
-  const type = "text"
+  const type = "silder"
   const baseName = type + "_" + (currentProject.objects.length + 1);
 
   const newObj = {
