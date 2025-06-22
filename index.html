@@ -19,6 +19,52 @@
   </div>
 </div>
 <!-- End Objectlijst Panel-->
+<!-- Object Instellingen Panel -->
+<div id="objectSettingsPanel">
+  <h3>Object Instellingen</h3>
+  <form id="objectSettingsForm" onsubmit="saveObjectSettings(); return false;">
+    <label>Type:
+      <select id="objType" disabled>
+        <option value="button">Knop</option>
+        <option value="led">LED</option>
+      </select>
+    </label>
+
+    <label>Naam:
+      <input type="text" id="objName">
+    </label>
+
+    <label>Label:
+      <input type="text" id="objLabel">
+    </label>
+
+    <label>Publish Topic:
+      <input type="text" id="objPublishTopic">
+    </label>
+
+    <label>Publish Payload:
+      <input type="text" id="objPublishPayload">
+    </label>
+
+    <label>Subscribe Topic:
+      <input type="text" id="objSubscribeTopic">
+    </label>
+
+    <label>State On:
+      <input type="text" id="objStateOn">
+    </label>
+
+    <label>State Off:
+      <input type="text" id="objStateOff">
+    </label>
+
+    <div style="margin-top: 10px; display: flex; justify-content: space-between;">
+      <button type="submit">Opslaan</button>
+      <button type="button" onclick="deleteCurrentObject()" style="background-color:#c44; color:white;">Verwijderen</button>
+    </div>
+  </form>
+</div>
+<!-- End Object Instellingen Panel -->
 <!--Menu-->
 <div class="menu-bar">
     <!--div class="menu-dropdown"-->
