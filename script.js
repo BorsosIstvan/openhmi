@@ -234,6 +234,7 @@ function openObjectList() {
 
 function closeObjectList() {
   document.getElementById("objectListPanel").style.display = "none";
+  renderObjects()
 }
 
 function openObjectSettings(index) {
