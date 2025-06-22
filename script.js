@@ -351,6 +351,8 @@ function openObjectSettings(index) {
   document.getElementById("objPublishTopic").value = obj.publishTopic;
   document.getElementById("objPublishPayload").value = obj.publishPayload;
   document.getElementById("objSubscribeTopic").value = obj.subscribeTopic;
+  document.getElementById("objobjStateOn").value = obj.stateOn;
+  document.getElementById("objobjStateOff").value = obj.stateOff;
   // etc.
 
   document.getElementById('objectSettingsPanel').style.display = 'block';
