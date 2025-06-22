@@ -330,6 +330,16 @@ function addObject() {
   openObjectSettings(currentProject.objects.length - 1);
 }
 
+function deleteCurrentObject() {
+  if (selectedObject) {
+    currentProject.objects.splice(selectedObject.index, 1);
+    selectedObject = null;
+    document.getElementById("objectSettingsPanel").style.display = "none";
+    renderObjects();
+  }
+}
+
+
 function openObjectSettings(index) {
   const obj = currentProject.objects[index];
   selectedObject = { ...obj, index }; // bewaar index
