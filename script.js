@@ -235,3 +235,16 @@ function openObjectList() {
 function closeObjectList() {
   document.getElementById("objectListPanel").style.display = "none";
 }
+
+function openObjectSettings(index) {
+  const obj = currentProject.objects[index];
+  selectedObject = { ...obj, index }; // bewaar index
+
+  // Vul hiervoor hetzelfde als eerder, bijv:
+  document.getElementById("objName").value = obj.name;
+  document.getElementById("objType").value = obj.type;
+  document.getElementById("objLabel").value = obj.label || "";
+  // etc.
+
+  document.getElementById('objectSettingsModal').style.display = 'block';
+}
