@@ -38,11 +38,6 @@ button {
   overflow: hidden;
 }
 
-#screen {
-    margin: 0 auto;
-    border: none;
-}
-
 .menu-bar {
   position: absolute;
   bottom: 0;
