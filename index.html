@@ -10,55 +10,7 @@
 <!-- Werkplek-->
     <div id="screen" class="hmi-screen"></div>
 <!-- End Werkplek-->
-<!-- Instellingen Modaal -->
-<div id="settingsModal" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
-    width: 400px; background: white; border-radius: 16px; box-shadow: 0 0 20px #0005; padding: 20px; z-index: 9999; font-family: sans-serif;">
-  <h2 style="margin-top: 0;">Projectinstellingen</h2>
 
-  <label>MQTT Broker:<br><input id="mqttBroker" type="text" style="width: 100%;" /></label><br><br>
-
-  <label>Poort:<br><input id="mqttPort" type="number" value="1883" style="width: 100%;" /></label><br><br>
-
-  <label>Topic Prefix:<br><input id="mqttPrefix" type="text" style="width: 100%;" /></label><br><br>
-
-  <label>Resolutie:<br><input id="resolution" type="text" value="320x240" style="width: 100%;" /></label><br><br>
-
-  <label>Achtergrondkleur:<br><input id="bgColor" type="color" value="#ffffff" style="width: 100%;" /></label><br><br>
-
-  <div style="text-align: right;">
-    <button onclick="closeSettings()" style="margin-right: 10px;">Sluiten</button>
-    <button onclick="saveSettings()">Opslaan</button>
-  </div>
-</div>
-<!-- End Instellingen Modaal-->
-<!-- Objectbeheer Tabel -->
-<div id="objectManager" style="display: none; position: fixed; top: 5%; left: 50%; transform: translateX(-50%);
-  width: 90%; max-width: 1000px; background: white; border-radius: 12px; box-shadow: 0 0 20px #0005; padding: 20px; z-index: 9999; font-family: sans-serif;">
-  <h2 style="margin-top: 0;">Objectbeheer</h2>
-
-  <table style="width: 100%; border-collapse: collapse;" id="objectTable">
-    <thead>
-      <tr style="background: #f0f0f0;">
-        <th>Naam</th>
-        <th>Type</th>
-        <th>Label</th>
-        <th>X</th>
-        <th>Y</th>
-        <th>Breedte</th>
-        <th>Hoogte</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Dynamische rijen -->
-    </tbody>
-  </table>
-
-  <div style="text-align: right; margin-top: 10px;">
-    <button onclick="closeObjectManager()" style="margin-right: 10px;">Sluiten</button>
-    <button onclick="addObjectRow()">+ Rij toevoegen</button>
-  </div>
-</div>
 
 <!--Menu-->
 <div class="menu-bar">

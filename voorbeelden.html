@@ -1,0 +1,184 @@
+<!-- Objectbeheer Tabel -->
+<div id="objectManager" style="display: none; position: fixed; top: 5%; left: 50%; transform: translateX(-50%);
+  width: 90%; max-width: 1000px; background: white; border-radius: 12px; box-shadow: 0 0 20px #0005; padding: 20px; z-index: 9999; font-family: sans-serif;">
+  <h2 style="margin-top: 0;">Objectbeheer</h2>
+
+  <table style="width: 100%; border-collapse: collapse;" id="objectTable">
+    <thead>
+      <tr style="background: #f0f0f0;">
+        <th>Naam</th>
+        <th>Type</th>
+        <th>Label</th>
+        <th>X</th>
+        <th>Y</th>
+        <th>Breedte</th>
+        <th>Hoogte</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Dynamische rijen -->
+    </tbody>
+  </table>
+
+  <div style="text-align: right; margin-top: 10px;">
+    <button onclick="closeObjectManager()" style="margin-right: 10px;">Sluiten</button>
+    <button onclick="addObjectRow()">+ Rij toevoegen</button>
+  </div>
+</div>
+<!-- End Bbjectbeheer Tabel-->
+
+<!-- Instellingen Modaal -->
+<div id="settingsModal" style="display: none; position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
+    width: 400px; background: white; border-radius: 16px; box-shadow: 0 0 20px #0005; padding: 20px; z-index: 9999; font-family: sans-serif;">
+  <h2 style="margin-top: 0;">Projectinstellingen</h2>
+
+  <label>MQTT Broker:<br><input id="mqttBroker" type="text" style="width: 100%;" /></label><br><br>
+
+  <label>Poort:<br><input id="mqttPort" type="number" value="1883" style="width: 100%;" /></label><br><br>
+
+  <label>Topic Prefix:<br><input id="mqttPrefix" type="text" style="width: 100%;" /></label><br><br>
+
+  <label>Resolutie:<br><input id="resolution" type="text" value="320x240" style="width: 100%;" /></label><br><br>
+
+  <label>Achtergrondkleur:<br><input id="bgColor" type="color" value="#ffffff" style="width: 100%;" /></label><br><br>
+
+  <div style="text-align: right;">
+    <button onclick="closeSettings()" style="margin-right: 10px;">Sluiten</button>
+    <button onclick="saveSettings()">Opslaan</button>
+  </div>
+</div>
+<!-- End Instellingen Modaal-->
+
+<!-- Function openObjectManager-->
+function openObjectManager() {
+  const tbody = document.querySelector("#objectTable tbody");
+  tbody.innerHTML = "";
+
+  if (!currentProject?.objects) return;
+
+  currentProject.objects.forEach((obj, index) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td><input value="${obj.name || ""}" onchange="updateObjectField(${index}, 'name', this.value)" /></td>
+      <td>
+        <select onchange="changeObjectType(${index}, this.value)">
+          <option value="button" ${obj.type === "button" ? "selected" : ""}>Knop</option>
+          <option value="led" ${obj.type === "led" ? "selected" : ""}>LED</option>
+        </select>
+      </td>
+      <td><input value="${obj.label || ""}" onchange="updateObjectField(${index}, 'label', this.value)" /></td>
+      <td><input type="number" value="${obj.x || 0}" onchange="updateObjectField(${index}, 'x', parseInt(this.value))" /></td>
+      <td><input type="number" value="${obj.y || 0}" onchange="updateObjectField(${index}, 'y', parseInt(this.value))" /></td>
+      <td><input type="number" value="${obj.width || 100}" onchange="updateObjectField(${index}, 'width', parseInt(this.value))" /></td>
+      <td><input type="number" value="${obj.height || 50}" onchange="updateObjectField(${index}, 'height', parseInt(this.value))" /></td>
+      <td><button onclick="deleteObjectRow(${index})">🗑️</button></td>
+    `;
+
+    tbody.appendChild(row);
+
+    // Extra rij voor type-specifieke velden
+    const extraRow = document.createElement("tr");
+    extraRow.innerHTML = `<td colspan="8">${generateExtraFields(obj, index)}</td>`;
+    tbody.appendChild(extraRow);
+  });
+
+  document.getElementById("objectManager").style.display = "block";
+}
+<!-- End Function openObjectManager-->
+
+<!-- ObjectFunctiesBeheerFuncties-->
+function closeObjectManager() {
+  document.getElementById("objectManager").style.display = "none";
+  renderObjects();
+  saveCurrentProject?.();
+}
+
+function deleteObjectRow(index) {
+  if (confirm("Weet je zeker dat je dit object wilt verwijderen?")) {
+    currentProject.objects.splice(index, 1);
+    openObjectManager();
+  }
+}
+
+function updateObjectField(index, field, value) {
+  currentProject.objects[index][field] = value;
+  renderObjects(); // real-time bijwerken op canvas
+  saveCurrentProject?.();
+}
+
+function generateExtraFields(obj, index) {
+  if (obj.type === "button") {
+    return `
+      <label>Publish Topic:
+        <input value="${obj.publishTopic || ""}" onchange="updateObjectField(${index}, 'publishTopic', this.value)" />
+      </label>
+      &nbsp;&nbsp;
+      <label>Payload:
+        <input value="${obj.publishPayload || ""}" onchange="updateObjectField(${index}, 'publishPayload', this.value)" />
+      </label>
+    `;
+  } else if (obj.type === "led") {
+    return `
+      <label>Subscribe Topic:
+        <input value="${obj.subscribeTopic || ""}" onchange="updateObjectField(${index}, 'subscribeTopic', this.value)" />
+      </label>
+      &nbsp;&nbsp;
+      <label>State On:
+        <input value="${obj.stateOn || ""}" onchange="updateObjectField(${index}, 'stateOn', this.value)" />
+      </label>
+      &nbsp;&nbsp;
+      <label>State Off:
+        <input value="${obj.stateOff || ""}" onchange="updateObjectField(${index}, 'stateOff', this.value)" />
+      </label>
+    `;
+  }
+  return "";
+}
+
+function changeObjectType(index, newType) {
+  const base = {
+    name: currentProject.objects[index].name || "",
+    x: currentProject.objects[index].x || 50,
+    y: currentProject.objects[index].y || 50,
+    width: currentProject.objects[index].width || 100,
+    height: currentProject.objects[index].height || 50,
+    type: newType
+  };
+
+  if (newType === "button") {
+    currentProject.objects[index] = {
+      ...base,
+      label: "Knop",
+      publishTopic: "",
+      publishPayload: ""
+    };
+  } else if (newType === "led") {
+    currentProject.objects[index] = {
+      ...base,
+      subscribeTopic: "",
+      stateOn: "aan",
+      stateOff: "uit"
+    };
+  }
+
+  openObjectManager(); // herlaad tabel
+}
+
+function addObjectRow() {
+  currentProject.objects.push({
+    type: "button",
+    name: "nieuwObject",
+    label: "Knop",
+    x: 50,
+    y: 50,
+    width: 120,
+    height: 40,
+    publishTopic: "",
+    publishPayload: ""
+  });
+  openObjectManager();
+}
+
+<!-- End objectFunctiesBeheerFuncties-->
