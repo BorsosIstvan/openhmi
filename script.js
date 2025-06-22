@@ -266,8 +266,6 @@ function saveObjectSettings() {
     obj.publishTopic = document.getElementById("objPublishTopic").value;
     obj.publishPayload = document.getElementById("objPublishPayload").value;
     obj.subscribeTopic = document.getElementById("objSubscribeTopic").value;
-    obj.stateOn = document.getElementById("objStateOn").value;
-    obj.stateOff = document.getElementById("objStateOff").value;
 
     // Sluit het instellingenpaneel
     closeObjectSettings();
