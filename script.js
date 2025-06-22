@@ -210,6 +210,66 @@ function renderObjects() {
       el.style.border = "2px solid #333";
     }
 
+    // Silder en tekst
+    if (obj.type === "text") {
+  el.className = "hmi-text";
+  el.innerText = obj.label || obj.name;
+  el.style.fontSize = "16px";
+  el.style.display = "flex";
+  el.style.alignItems = "center";
+  el.style.justifyContent = "center";
+  el.style.background = "transparent";
+  el.style.cursor = "default";
+
+} else if (obj.type === "slider") {
+  el = document.createElement("input");
+  el.type = "range";
+  el.className = "hmi-slider";
+  el.min = obj.min || 0;
+  el.max = obj.max || 100;
+  el.value = obj.value || 50;
+  el.style.position = "absolute";
+  el.style.left = obj.x + "px";
+  el.style.top = obj.y + "px";
+  el.style.width = obj.width + "px";
+  el.style.height = obj.height + "px";
+
+  if (mode === "run") {
+    el.oninput = () => {
+      const topic = obj.publishTopic || ((currentProject.settings.mqttPrefix || '') + "/" + obj.name);
+      const payload = el.value;
+      publishMQTT(topic, payload);
+    };
+  }
+
+  if (mode === "edit") {
+    // Maken slider ook versleepbaar
+    el.onmousedown = (e) => {
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const origX = obj.x;
+      const origY = obj.y;
+      e.preventDefault();
+
+      function onMove(ev) {
+        obj.x = origX + (ev.clientX - startX);
+        obj.y = origY + (ev.clientY - startY);
+        renderObjects();
+      }
+
+      function onUp() {
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      }
+
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    };
+  }
+}
+
+    // End Silder en tekst
+
     // Alleen in EDIT mode: drag & resize
     if (mode === "edit") {
       el.onmousedown = (e) => {
@@ -306,7 +366,7 @@ function closeObjectList() {
 
 function addObject() {
   //const type = document.getElementById("newObjType").value;
-  const type = "led"
+  const type = "silder"
   const baseName = type + "_" + (currentProject.objects.length + 1);
 
   const newObj = {

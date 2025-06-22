@@ -120,6 +120,18 @@ button {
   border-radius: 50%;
 }
 
+.hmi-text {
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: center;
+}
+
+.hmi-slider {
+  -webkit-appearance: none;
+  background: #ccc;
+}
+
+
 /* Objectlijst panel */
 #objectListPanel {
   display: none;
