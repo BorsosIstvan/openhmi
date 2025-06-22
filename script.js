@@ -252,3 +252,25 @@ function openObjectSettings(index) {
 function closeObjectSettings() {
 document.getElementById("objectSettingsPanel").style.display = "none"
 }
+
+function saveObjectSettings() {
+  if (selectedObject && selectedObject.index !== undefined) {
+    const obj = currentProject.objects[selectedObject.index];
+
+    // Update eigenschappen, behalve x,y, breedte, hoogte (zoals gevraagd)
+    obj.name = document.getElementById("objName").value;
+    obj.label = document.getElementById("objLabel").value;
+    obj.publishTopic = document.getElementById("objPublishTopic").value;
+    obj.publishPayload = document.getElementById("objPublishPayload").value;
+    obj.subscribeTopic = document.getElementById("objSubscribeTopic").value;
+    obj.stateOn = document.getElementById("objStateOn").value;
+    obj.stateOff = document.getElementById("objStateOff").value;
+
+    // Sluit het instellingenpaneel
+    closeObjectSettings();
+
+    // Herlaad de objectenlijst, zodat de gewijzigde naam zichtbaar wordt
+    openObjectList();
+  }
+}
+
