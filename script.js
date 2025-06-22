@@ -248,3 +248,7 @@ function openObjectSettings(index) {
 
   document.getElementById('objectSettingsPanel').style.display = 'block';
 }
+
+function closeObjectSettings() {
+document.getElementById("objectSettingsPanel").style.display = "none"
+}
