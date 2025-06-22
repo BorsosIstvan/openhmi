@@ -219,3 +219,19 @@ function publishMQTT(topic, message) {
     console.warn("MQTT client niet verbonden.");
   }
 }
+
+function openObjectList() {
+  const ul = document.getElementById("objectList");
+  ul.innerHTML = "";
+  currentProject.objects.forEach((obj, idx) => {
+    const li = document.createElement("li");
+    li.textContent = `${obj.type.toUpperCase()} — ${obj.name}`;
+    li.onclick = () => openObjectSettings(idx);
+    ul.appendChild(li);
+  });
+  document.getElementById("objectListPanel").style.display = "block";
+}
+
+function closeObjectList() {
+  document.getElementById("objectListPanel").style.display = "none";
+}

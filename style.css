@@ -120,4 +120,18 @@ button {
   border-radius: 50%;
 }
 
+#objectListPanel li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+#objectListPanel li:hover {
+  background: #f0f0f0;
+}
+#objectListPanel button {
+  font-size: 0.9em;
+}
+
 
