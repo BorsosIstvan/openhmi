@@ -304,6 +304,32 @@ function closeObjectList() {
   renderObjects()
 }
 
+function addObject() {
+  //const type = document.getElementById("newObjType").value;
+  const type = "led"
+  const baseName = type + "_" + (currentProject.objects.length + 1);
+
+  const newObj = {
+    type,
+    name: baseName,
+    label: type.toUpperCase(),
+    x: 50,
+    y: 50,
+    width: type === "slider" ? 120 : 100,
+    height: 40,
+  };
+
+  if (type === "slider") {
+    newObj.min = 0;
+    newObj.max = 100;
+    newObj.value = 50;
+  }
+
+  currentProject.objects.push(newObj);
+  renderObjects();
+  openObjectSettings(currentProject.objects.length - 1);
+}
+
 function openObjectSettings(index) {
   const obj = currentProject.objects[index];
   selectedObject = { ...obj, index }; // bewaar index
