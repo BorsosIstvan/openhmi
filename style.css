@@ -139,6 +139,13 @@ button {
   color: #333;
 }
 
+#objLiCloseButton {
+    text-align:right; 
+    margin-top:10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
 #objectListPanel h3 {
   margin-top: 0;
   margin-bottom: 10px;
