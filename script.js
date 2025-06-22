@@ -1,5 +1,6 @@
 let client = null;
 let currentProject = null;
+let mode = "run"; // of "edit"
 
 function connectMQTT(brokerURL) {
   if (client) {
@@ -274,5 +275,10 @@ function saveObjectSettings() {
     // Herlaad de objectenlijst, zodat de gewijzigde naam zichtbaar wordt
     openObjectList();
   }
+}
+
+function toggleMode(isEdit) {
+  mode = isEdit ? "edit" : "run";
+  renderObjects(); // herteken de objecten
 }
 
