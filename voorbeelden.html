@@ -182,3 +182,45 @@ function addObjectRow() {
 }
 
 <!-- End objectFunctiesBeheerFuncties-->
+<!-- Functionele render objecten functie-->
+function renderObjects() {
+  const screen = document.getElementById('screen');
+  screen.innerHTML = "";
+
+  currentProject.objects.forEach(obj => {
+    let el = document.createElement("div");
+    el.style.position = "absolute";
+    el.style.left = obj.x + "px";
+    el.style.top = obj.y + "px";
+    el.style.width = obj.width + "px";
+    el.style.height = obj.height + "px";
+    el.style.borderRadius = "10px";
+
+    if (obj.type === "button") {
+      el.innerText = obj.label;
+      el.className = "hmi-button";
+      el.style.background = "#48c";
+      el.style.color = "white";
+      el.style.display = "flex";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.style.cursor = "pointer";
+      el.dataset.name = obj.name;
+
+      el.onclick = () => {
+  const topic = obj.publishTopic || ((currentProject.settings.mqttPrefix || '') + "/" + obj.name);
+  const payload = obj.publishPayload || "clicked";
+  publishMQTT(topic, payload);
+};
+
+    } else if (obj.type === "led") {
+      el.className = "hmi-led";
+      el.style.background = obj.state ? "lime" : "gray";
+      el.style.border = "2px solid #333";
+      el.dataset.name = obj.name;
+    }
+
+    screen.appendChild(el);
+  });
+}
+<!-- End Functionele render objecten functie-->

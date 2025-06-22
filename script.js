@@ -175,7 +175,7 @@ function renderObjects() {
   const screen = document.getElementById('screen');
   screen.innerHTML = "";
 
-  currentProject.objects.forEach(obj => {
+  currentProject.objects.forEach((obj, idx) => {
     let el = document.createElement("div");
     el.style.position = "absolute";
     el.style.left = obj.x + "px";
@@ -183,6 +183,8 @@ function renderObjects() {
     el.style.width = obj.width + "px";
     el.style.height = obj.height + "px";
     el.style.borderRadius = "10px";
+
+    el.dataset.name = obj.name;
 
     if (obj.type === "button") {
       el.innerText = obj.label;
@@ -192,25 +194,89 @@ function renderObjects() {
       el.style.display = "flex";
       el.style.alignItems = "center";
       el.style.justifyContent = "center";
-      el.style.cursor = "pointer";
-      el.dataset.name = obj.name;
+      el.style.cursor = mode === "edit" ? "move" : "pointer";
 
-      el.onclick = () => {
-  const topic = obj.publishTopic || ((currentProject.settings.mqttPrefix || '') + "/" + obj.name);
-  const payload = obj.publishPayload || "clicked";
-  publishMQTT(topic, payload);
-};
+      if (mode === "run") {
+        el.onclick = () => {
+          const topic = obj.publishTopic || ((currentProject.settings.mqttPrefix || '') + "/" + obj.name);
+          const payload = obj.publishPayload || "clicked";
+          publishMQTT(topic, payload);
+        };
+      }
 
     } else if (obj.type === "led") {
       el.className = "hmi-led";
       el.style.background = obj.state ? "lime" : "gray";
       el.style.border = "2px solid #333";
-      el.dataset.name = obj.name;
+    }
+
+    // Alleen in EDIT mode: drag & resize
+    if (mode === "edit") {
+      el.onmousedown = (e) => {
+        e.preventDefault();
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const origX = obj.x;
+        const origY = obj.y;
+
+        function onMouseMove(ev) {
+          const dx = ev.clientX - startX;
+          const dy = ev.clientY - startY;
+          obj.x = origX + dx;
+          obj.y = origY + dy;
+          renderObjects();
+        }
+
+        function onMouseUp() {
+          document.removeEventListener("mousemove", onMouseMove);
+          document.removeEventListener("mouseup", onMouseUp);
+        }
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+      };
+
+      // RESIZE-hoekje rechtsonder
+      const resizeHandle = document.createElement("div");
+      resizeHandle.style.position = "absolute";
+      resizeHandle.style.right = "0";
+      resizeHandle.style.bottom = "0";
+      resizeHandle.style.width = "12px";
+      resizeHandle.style.height = "12px";
+      resizeHandle.style.background = "#0006";
+      resizeHandle.style.cursor = "se-resize";
+      resizeHandle.style.borderRadius = "2px";
+
+      resizeHandle.onmousedown = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const origW = obj.width;
+        const origH = obj.height;
+
+        function onMouseMove(ev) {
+          obj.width = Math.max(20, origW + (ev.clientX - startX));
+          obj.height = Math.max(20, origH + (ev.clientY - startY));
+          renderObjects();
+        }
+
+        function onMouseUp() {
+          document.removeEventListener("mousemove", onMouseMove);
+          document.removeEventListener("mouseup", onMouseUp);
+        }
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+      };
+
+      el.appendChild(resizeHandle);
     }
 
     screen.appendChild(el);
   });
 }
+
 
 function publishMQTT(topic, message) {
   if (client?.connected) {
