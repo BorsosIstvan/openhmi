@@ -246,5 +246,5 @@ function openObjectSettings(index) {
   document.getElementById("objLabel").value = obj.label || "";
   // etc.
 
-  document.getElementById('objectSettingsModal').style.display = 'block';
+  document.getElementById('objectSettingsPanel').style.display = 'block';
 }
