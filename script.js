@@ -366,7 +366,7 @@ function closeObjectList() {
 
 function addObject() {
   //const type = document.getElementById("newObjType").value;
-  const type = "silder"
+  const type = "text"
   const baseName = type + "_" + (currentProject.objects.length + 1);
 
   const newObj = {
