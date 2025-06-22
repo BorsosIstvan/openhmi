@@ -135,7 +135,7 @@ button {
 }
 
 /* Objectlijst panel */
-#objectListPanel {
+.objectListPanel {
   display: none;
   position: absolute;
   top: 10px;
