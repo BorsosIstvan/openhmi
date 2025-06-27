@@ -225,6 +225,7 @@ function renderObjects() {
   el = document.createElement("input");
   el.type = "range";
   el.className = "hmi-slider";
+  el.dataset.name = obj.name;
   el.min = obj.min || 0;
   el.max = obj.max || 100;
   el.value = obj.value || 50;
