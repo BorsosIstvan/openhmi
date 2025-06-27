@@ -1,78 +1,233 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>OpenHMI Editor PRO</title>
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Editor</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.min.js"></script>
   <style>
-    body, html { margin:0; padding:0; height:100%; font-family:sans-serif; }
-    .toolbar { position: fixed; top: 0; left:0; right:0; height:50px; background:#333; color:#fff; display:flex; align-items:center; padding:0 10px; z-index:10; }
-    .toolbar * { margin-right:8px; }
-    #modeIndicator { font-weight:bold; color:yellow; }
-    #editorArea { position: absolute; top:50px; left:0; right:300px; bottom:0; background:#eef; overflow:hidden; }
-    #objectTable { position:absolute; top:50px; right:0; bottom:0; width:300px; background:#f0f0f0; overflow:auto; border-left:2px solid #aaa; padding:10px; }
-    table { width:100%; border-collapse: collapse; }
-    th, td { border:1px solid #ccc; padding:4px; text-align:center; }
-    .selected { background:yellow; }
-    .hmi-object { position:absolute; user-select:none; border:1px solid #000; border-radius:5px; padding:4px; box-sizing:border-box; cursor:move; background:white; }
-    .resize-handle { position:absolute; bottom:0; right:0; width:10px; height:10px; background:#000; cursor:se-resize; }
-    .slider-label { position:absolute; left:100%; margin-left:6px; background:#fff; padding:2px; border:1px solid #999; }
-    .property-dialog { position:fixed; top:100px; left:100px; background:white; border:2px solid #666; padding:10px; display:none; z-index:20; }
-    .property-dialog input, .property-dialog select { width:100%; margin-bottom:8px; }
-    .property-dialog label { display:block; font-weight:bold; margin-top:6px; }
-    .object-row { cursor:pointer; }
-    .object-row:hover { background:#ddd; }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 250px;
+      background: #f0f0f0;
+      border-right: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+    }
+    .object-table {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .object-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .object-table th, .object-table td {
+      border: 1px solid #ccc;
+      padding: 4px;
+      font-size: 12px;
+    }
+    .editor {
+      flex: 1;
+      position: relative;
+      background: #fff;
+    }
+    .toolbar {
+      padding: 5px;
+      background: #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #aaa;
+    }
+    .box {
+      position: absolute;
+      background: lightgray;
+      border: 1px solid black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+    }
+    .resize-handle {
+      width: 10px;
+      height: 10px;
+      background: black;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      cursor: se-resize;
+    }
+    .selected {
+      border: 2px dashed blue;
+    }
+    .property-panel {
+      padding: 10px;
+      background: #e0e0e0;
+    }
+    .mode-indicator {
+      font-weight: bold;
+      color: green;
+    }
   </style>
 </head>
 <body>
-  <div class="toolbar">
-    <select id="newObjType">
-      <option value="text">Text</option>
-      <option value="button">Button</option>
-      <option value="lamp">Lamp</option>
-      <option value="potentiometer">Potentiometer</option>
-      <option value="number">Number</option>
-    </select>
-    <button onclick="insertObject()">Add</button>
-    <button onclick="deleteSelected()">Delete</button>
-    <button onclick="toggleMode()">Toggle Mode</button>
-    <span id="modeIndicator">Edit Mode</span>
-    <button onclick="saveProject()">Save</button>
-    <button onclick="saveProjectAs()">Save As</button>
-    <select id="projectList"></select>
-    <button onclick="loadProject()">Load</button>
+<div id="app">
+  <div class="sidebar">
+    <div class="toolbar">
+      <button @click="addObject">Voeg object toe</button>
+      <button @click="toggleMode">{{ mode === 'edit' ? 'Naar Run Mode' : 'Naar Edit Mode' }}</button>
+    </div>
+    <div class="mode-indicator">{{ mode === 'edit' ? 'Edit Mode' : 'Run Mode' }}</div>
+    <div class="object-table">
+      <table>
+        <thead>
+          <tr><th>Naam</th><th>Acties</th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="(obj, index) in objects" :key="obj.id">
+            <td>{{ obj.name }}</td>
+            <td>
+              <button @click="moveObject(index, -1)">⬆</button>
+              <button @click="moveObject(index, 1)">⬇</button>
+              <button @click="deleteObject(index)">✖</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="property-panel" v-if="selectedObject">
+      <label>Naam: <input v-model="selectedObject.name"></label><br>
+      <label>Waarde: <input v-model="selectedObject.value"></label><br>
+      <label>MQTT-topic: <input v-model="selectedObject.topic"></label><br>
+      <label>Kleur: <input type="color" v-model="selectedObject.color"></label>
+    </div>
   </div>
-
-  <div id="editorArea"></div>
-  <div id="objectTable">
-    <h3>Objecten</h3>
-    <table>
-      <thead>
-        <tr><th>Type</th><th>Naam</th><th>⬆</th><th>⬇</th><th>✖</th></tr>
-      </thead>
-      <tbody id="objectList"></tbody>
-    </table>
+  <div class="editor" @mousedown.self="deselect">
+    <div v-for="(obj, index) in objects" 
+         class="box"
+         :class="{selected: selectedIndex === index}"
+         :style="{
+           left: obj.x + 'px',
+           top: obj.y + 'px',
+           width: obj.width + 'px',
+           height: obj.height + 'px',
+           backgroundColor: obj.color
+         }"
+         @mousedown.stop="startDrag($event, index)">
+      {{ obj.name }}
+      <div class="resize-handle" @mousedown.stop="startResize($event, index)"></div>
+    </div>
   </div>
+</div>
 
-  <div class="property-dialog" id="propertyDialog">
-    <label for="propName">Naam:</label>
-    <input type="text" id="propName">
-
-    <label for="propValue">Waarde:</label>
-    <input type="text" id="propValue">
-
-    <label for="propColor">Kleur:</label>
-    <input type="color" id="propColor">
-
-    <label for="propTopic">MQTT-topic:</label>
-    <input type="text" id="propTopic">
-
-    <button onclick="saveProperties()">Opslaan</button>
-    <button onclick="closeProperties()">Annuleer</button>
-  </div>
-
-  <script src="editor.js">
-    // JavaScript volgt in apart blok
-  </script>
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    mode: 'edit',
+    objects: [],
+    selectedIndex: null,
+    dragStart: null,
+    resizeStart: null,
+    snapping: 10,
+  },
+  computed: {
+    selectedObject() {
+      return this.objects[this.selectedIndex] || null;
+    }
+  },
+  methods: {
+    addObject() {
+      this.objects.push({
+        id: Date.now(),
+        name: 'Object ' + (this.objects.length + 1),
+        value: '',
+        topic: '',
+        color: '#cccccc',
+        x: 50, y: 50, width: 100, height: 100
+      });
+    },
+    toggleMode() {
+      this.mode = this.mode === 'edit' ? 'run' : 'edit';
+    },
+    select(index) {
+      if (this.mode === 'edit') this.selectedIndex = index;
+    },
+    deselect() {
+      this.selectedIndex = null;
+    },
+    deleteObject(index) {
+      this.objects.splice(index, 1);
+      if (this.selectedIndex === index) this.selectedIndex = null;
+    },
+    moveObject(index, dir) {
+      const newIndex = index + dir;
+      if (newIndex < 0 || newIndex >= this.objects.length) return;
+      const temp = this.objects[newIndex];
+      this.$set(this.objects, newIndex, this.objects[index]);
+      this.$set(this.objects, index, temp);
+    },
+    startDrag(e, index) {
+      this.select(index);
+      this.dragStart = {
+        x: e.clientX,
+        y: e.clientY,
+        obj: { ...this.objects[index] },
+        index
+      };
+      document.addEventListener('mousemove', this.onDrag);
+      document.addEventListener('mouseup', this.stopDrag);
+    },
+    onDrag(e) {
+      const { x, y, obj, index } = this.dragStart;
+      const dx = e.clientX - x;
+      const dy = e.clientY - y;
+      const newX = Math.round((obj.x + dx) / this.snapping) * this.snapping;
+      const newY = Math.round((obj.y + dy) / this.snapping) * this.snapping;
+      this.$set(this.objects[index], 'x', newX);
+      this.$set(this.objects[index], 'y', newY);
+    },
+    stopDrag() {
+      document.removeEventListener('mousemove', this.onDrag);
+      document.removeEventListener('mouseup', this.stopDrag);
+      this.dragStart = null;
+    },
+    startResize(e, index) {
+      this.select(index);
+      this.resizeStart = {
+        x: e.clientX,
+        y: e.clientY,
+        obj: { ...this.objects[index] },
+        index
+      };
+      document.addEventListener('mousemove', this.onResize);
+      document.addEventListener('mouseup', this.stopResize);
+    },
+    onResize(e) {
+      const { x, y, obj, index } = this.resizeStart;
+      const dx = e.clientX - x;
+      const dy = e.clientY - y;
+      const newW = Math.max(10, Math.round((obj.width + dx) / this.snapping) * this.snapping);
+      const newH = Math.max(10, Math.round((obj.height + dy) / this.snapping) * this.snapping);
+      this.$set(this.objects[index], 'width', newW);
+      this.$set(this.objects[index], 'height', newH);
+    },
+    stopResize() {
+      document.removeEventListener('mousemove', this.onResize);
+      document.removeEventListener('mouseup', this.stopResize);
+      this.resizeStart = null;
+    }
+  }
+});
+</script>
 </body>
 </html>
