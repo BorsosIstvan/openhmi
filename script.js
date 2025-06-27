@@ -228,16 +228,16 @@ function renderObjects() {
   el.min = obj.min || 0;
   el.max = obj.max || 100;
   el.value = obj.value || 50;
-  el.style.position = "absolute";
-  el.style.left = obj.x + "px";
-  el.style.top = obj.y + "px";
-  el.style.width = obj.width + "px";
-  el.style.height = obj.height + "px";
-  el.style.zIndex = 10;
+  //el.style.position = "absolute";
+  //el.style.left = obj.x + "px";
+  //el.style.top = obj.y + "px";
+  //el.style.width = obj.width + "px";
+  //el.style.height = obj.height + "px";
+  //el.style.zIndex = 10;
 
   // Optioneel kleur of rand
-  el.style.background = "#ddd";
-  el.style.border = "1px solid #aaa";
+  //el.style.background = "#ddd";
+  //el.style.border = "1px solid #aaa";
 
   if (mode === "run") {
     el.oninput = () => {
