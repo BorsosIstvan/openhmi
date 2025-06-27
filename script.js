@@ -222,10 +222,18 @@ function renderObjects() {
   el.style.cursor = "default";
 
 } else if (obj.type === "slider") {
+    // Maak een container voor de slider
+let container = document.createElement("div");
+container.style.position = "absolute";
+container.style.left = obj.x + "px";
+container.style.top = obj.y + "px";
+container.style.width = obj.width + "px";
+container.style.height = obj.height + "px";
+container.dataset.name = obj.name;
+// Maak de slider
   el = document.createElement("input");
   el.type = "range";
   el.className = "hmi-slider";
-  el.dataset.name = obj.name;
   el.min = obj.min || 0;
   el.max = obj.max || 100;
   el.value = obj.value || 50;
@@ -239,6 +247,9 @@ function renderObjects() {
   // Optioneel kleur of rand
   //el.style.background = "#ddd";
   //el.style.border = "1px solid #aaa";
+
+  // Voeg slider toe aan container
+container.appendChild(el);
 
   if (mode === "run") {
     el.oninput = () => {
