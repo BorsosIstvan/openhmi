@@ -127,7 +127,7 @@ button {
 }
 
 .hmi-slider {
-  -webkit-appearance: none;
+  /*-webkit-appearance: none;*/
   background: #ccc;
 }
 
