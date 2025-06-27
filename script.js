@@ -223,7 +223,7 @@ function renderObjects() {
 
 } else if (obj.type === "slider") {
   el = document.createElement("input");
-  el.type = "button"; //range
+  el.type = "range";
   el.className = "hmi-slider";
   el.min = obj.min || 0;
   el.max = obj.max || 100;
@@ -234,6 +234,7 @@ function renderObjects() {
   el.style.width = obj.width + "px";
   el.style.height = obj.height + "px";
   el.style.zIndex = 10;
+  document.getElementById("screen").appendChild(el);
 
   // Optioneel kleur of rand
   //el.style.background = "#ddd";
