@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>OpenHMI Editor</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <style>
+    body, html { margin:0; padding:0; height:100%; font-family:sans-serif; }
+    .toolbar { position: fixed; top: 5px; left:5px; z-index:20; }
+    .toolbar button, .toolbar select, .toolbar label { margin-right:8px; }
+    #screen { position: absolute; top:40px; bottom:0; left:0; right:0; background:#eef; overflow:hidden; }
+    .hmi-text, .hmi-button, .hmi-lamp { display:flex; justify-content:center; align-items:center; border:1px solid #333; border-radius:5px; background:#ccc; color:#000; }
+    .hmi-button { background:#48c; color:#fff; }
+    .hmi-slider { }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <select id="newObjType">
+      <option value="text">Text</option>
+      <option value="button">Button</option>
+      <option value="lamp">Lamp</option>
+      <option value="potentiometer">Potentiometer</option>
+      <option value="number">Number</option>
+    </select>
+    <button onclick="insertObject()">Add</button>
+    <button onclick="deleteSelected()">Delete</button>
+    <button onclick="toggleMode()">Toggle Run/Edit</button>
+    <button onclick="saveProject()">Save</button>
+    <button onclick="saveProjectAs()">Save As</button>
+    <select id="projectList"></select>
+    <button onclick="loadProject()">Load</button>
+  </div>
+  <div id="screen"></div>
+  <script src="editor.js"></script>
+</body>
+</html>
+
