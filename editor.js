@@ -106,7 +106,7 @@ function loadProject() {
     .then(data => {
       currentProject = data;
       renderObjects();
-      connectMQTT(currentProject.settings.mqttBroker || 'ws://localhost:9001');
+      connectMQTT(currentProject.settings.mqttBroker || 'ws://poci.n-soft.net:9001');
     });
 }
 
