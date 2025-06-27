@@ -2,16 +2,26 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>OpenHMI Editor</title>
+  <title>OpenHMI Editor PRO</title>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
     body, html { margin:0; padding:0; height:100%; font-family:sans-serif; }
-    .toolbar { position: fixed; top: 5px; left:5px; z-index:20; }
-    .toolbar button, .toolbar select, .toolbar label { margin-right:8px; }
-    #screen { position: absolute; top:40px; bottom:0; left:0; right:0; background:#eef; overflow:hidden; }
-    .hmi-text, .hmi-button, .hmi-lamp { display:flex; justify-content:center; align-items:center; border:1px solid #333; border-radius:5px; background:#ccc; color:#000; }
-    .hmi-button { background:#48c; color:#fff; }
-    .hmi-slider { }
+    .toolbar { position: fixed; top: 0; left:0; right:0; height:50px; background:#333; color:#fff; display:flex; align-items:center; padding:0 10px; z-index:10; }
+    .toolbar * { margin-right:8px; }
+    #modeIndicator { font-weight:bold; color:yellow; }
+    #editorArea { position: absolute; top:50px; left:0; right:300px; bottom:0; background:#eef; overflow:hidden; }
+    #objectTable { position:absolute; top:50px; right:0; bottom:0; width:300px; background:#f0f0f0; overflow:auto; border-left:2px solid #aaa; padding:10px; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border:1px solid #ccc; padding:4px; text-align:center; }
+    .selected { background:yellow; }
+    .hmi-object { position:absolute; user-select:none; border:1px solid #000; border-radius:5px; padding:4px; box-sizing:border-box; cursor:move; background:white; }
+    .resize-handle { position:absolute; bottom:0; right:0; width:10px; height:10px; background:#000; cursor:se-resize; }
+    .slider-label { position:absolute; left:100%; margin-left:6px; background:#fff; padding:2px; border:1px solid #999; }
+    .property-dialog { position:fixed; top:100px; left:100px; background:white; border:2px solid #666; padding:10px; display:none; z-index:20; }
+    .property-dialog input, .property-dialog select { width:100%; margin-bottom:8px; }
+    .property-dialog label { display:block; font-weight:bold; margin-top:6px; }
+    .object-row { cursor:pointer; }
+    .object-row:hover { background:#ddd; }
   </style>
 </head>
 <body>
@@ -25,14 +35,44 @@
     </select>
     <button onclick="insertObject()">Add</button>
     <button onclick="deleteSelected()">Delete</button>
-    <button onclick="toggleMode()">Toggle Run/Edit</button>
+    <button onclick="toggleMode()">Toggle Mode</button>
+    <span id="modeIndicator">Edit Mode</span>
     <button onclick="saveProject()">Save</button>
     <button onclick="saveProjectAs()">Save As</button>
     <select id="projectList"></select>
     <button onclick="loadProject()">Load</button>
   </div>
-  <div id="screen"></div>
-  <script src="editor.js"></script>
+
+  <div id="editorArea"></div>
+  <div id="objectTable">
+    <h3>Objecten</h3>
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Naam</th><th>⬆</th><th>⬇</th><th>✖</th></tr>
+      </thead>
+      <tbody id="objectList"></tbody>
+    </table>
+  </div>
+
+  <div class="property-dialog" id="propertyDialog">
+    <label for="propName">Naam:</label>
+    <input type="text" id="propName">
+
+    <label for="propValue">Waarde:</label>
+    <input type="text" id="propValue">
+
+    <label for="propColor">Kleur:</label>
+    <input type="color" id="propColor">
+
+    <label for="propTopic">MQTT-topic:</label>
+    <input type="text" id="propTopic">
+
+    <button onclick="saveProperties()">Opslaan</button>
+    <button onclick="closeProperties()">Annuleer</button>
+  </div>
+
+  <script src="editor.js">
+    // JavaScript volgt in apart blok
+  </script>
 </body>
 </html>
-
