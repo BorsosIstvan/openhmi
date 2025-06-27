@@ -223,8 +223,7 @@ function renderObjects() {
 
 } else if (obj.type === "slider") {
   el = document.createElement("input");
-  el.type = "range";
-  el.innerText = "Hello"
+  el.type = "button"; //range
   el.className = "hmi-slider";
   el.min = obj.min || 0;
   el.max = obj.max || 100;
